@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 💕</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ====================== KONFIGURASI WARNA & FONT ====================== */
+  :root{
+    --plum-deep:#2c0a1f;
+    --plum-mid:#4a1030;
+    --rose:#e0356b;
+    --rose-soft:#ff9dc0;
+    --gold:#e8b84b;
+    --cream:#fff3ec;
+    --font-display:'Dancing Script', cursive;
+    --font-body:'Poppins', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:var(--font-body);
+    color:var(--cream);
+    background:linear-gradient(160deg,var(--plum-deep) 0%, var(--plum-mid) 55%, #1b0614 100%);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ====================== CANVAS HUJAN HATI ====================== */
+  #heartCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+    pointer-events:none;
+  }
+
+  .content{
+    position:relative;
+    z-index:2;
+  }
+
+  /* ====================== HERO ====================== */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem 1.2rem;
+  }
+
+  .eyebrow{
+    letter-spacing:.35em;
+    text-transform:uppercase;
+    font-size:.7rem;
+    color:var(--gold);
+    margin-bottom:1.2rem;
+    opacity:.9;
+  }
+
+  .hero h1{
+    font-family:var(--font-display);
+    font-size:clamp(2.8rem,10vw,6.5rem);
+    line-height:1;
+    color:var(--rose-soft);
+    text-shadow:0 0 40px rgba(224,53,107,.45);
+  }
+
+  .hero .nama{
+    font-family:var(--font-display);
+    font-size:clamp(2.2rem,8vw,4.5rem);
+    color:var(--gold);
+    margin-top:.3rem;
+    text-shadow:0 0 30px rgba(232,184,75,.4);
+  }
+
+  .hero p.subtitle{
+    margin-top:1.4rem;
+    max-width:32ch;
+    font-weight:300;
+    color:var(--cream);
+    opacity:.85;
+    font-size:1rem;
+  }
+
+  .scroll-cue{
+    margin-top:3rem;
+    font-size:.8rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--rose-soft);
+    opacity:.7;
+    animation:bounce 2.4s infinite;
+  }
+
+  @keyframes bounce{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(8px);}
+  }
+
+  /* ====================== SECTION UMUM ====================== */
+  section{
+    padding:5rem 1.2rem;
+    max-width:820px;
+    margin:0 auto;
+  }
+
+  .section-title{
+    font-family:var(--font-display);
+    font-size:clamp(2rem,6vw,3rem);
+    text-align:center;
+    color:var(--rose-soft);
+    margin-bottom:2.5rem;
+  }
+
+  .card{
+    background:rgba(255,246,240,.06);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(6px);
+    border-radius:22px;
+    padding:2rem;
+  }
+
+  /* ====================== KALENDER / COUNTDOWN ====================== */
+  .countdown-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2rem;
+  }
+
+  .countdown-numbers{
+    display:flex;
+    gap:1.2rem;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .countdown-box{
+    background:linear-gradient(160deg,var(--rose),#a01d4a);
+    border-radius:16px;
+    padding:1rem 1.2rem;
+    min-width:78px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(224,53,107,.35);
+  }
+
+  .countdown-box .num{
+    font-size:1.9rem;
+    font-weight:600;
+  }
+
+  .countdown-box .label{
+    font-size:.65rem;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    opacity:.85;
+    margin-top:.2rem;
+  }
+
+  .countdown-msg{
+    text-align:center;
+    font-size:1rem;
+    opacity:.9;
+  }
+
+  .calendar{
+    width:100%;
+    max-width:320px;
+  }
+
+  .calendar .cal-header{
+    text-align:center;
+    font-family:var(--font-display);
+    font-size:1.4rem;
+    color:var(--gold);
+    margin-bottom:.8rem;
+  }
+
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+    text-align:center;
+  }
+
+  .cal-grid .dow{
+    font-size:.65rem;
+    opacity:.6;
+    padding-bottom:4px;
+  }
+
+  .cal-grid .day{
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    font-size:.8rem;
+    opacity:.85;
+  }
+
+  .cal-grid .day.empty{visibility:hidden;}
+
+  .cal-grid .day.birthday{
+    background:radial-gradient(circle at 30% 30%,var(--gold),var(--rose));
+    color:#2c0a1f;
+    font-weight:600;
+    box-shadow:0 0 18px rgba(232,184,75,.6);
+  }
+
+  /* ====================== SURAT / PESAN ====================== */
+  .envelope-wrap{
+    display:flex;
+    justify-content:center;
+  }
+
+  .envelope{
+    width:260px;
+    height:170px;
+    background:linear-gradient(160deg,var(--rose),#a01d4a);
+    border-radius:10px;
+    position:relative;
+    cursor:pointer;
+    box-shadow:0 15px 35px rgba(0,0,0,.35);
+    transition:transform .3s ease;
+  }
+
+  .envelope:hover{transform:translateY(-4px);}
+
+  .envelope::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;
+    width:0;height:0;
+    border-left:130px solid transparent;
+    border-right:130px solid transparent;
+    border-top:85px solid #7d1638;
+    border-radius:0 0 10px 10px;
+    z-index:1;
+  }
+
+  .envelope .seal{
+    position:absolute;
+    top:60%;left:50%;
+    transform:translate(-50%,-50%);
+    font-size:1.8rem;
+    z-index:2;
+  }
+
+  .envelope .hint{
+    position:absolute;
+    bottom:-1.8rem;
+    width:100%;
+    text-align:center;
+    font-size:.75rem;
+    opacity:.7;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+
+  .letter{
+    display:none;
+    margin-top:2.5rem;
+    background:var(--cream);
+    color:#3a0f22;
+    border-radius:16px;
+    padding:2rem;
+    font-size:1.02rem;
+    line-height:1.75;
+    box-shadow:0 20px 40px rgba(0,0,0,.35);
+    animation:unfold .5s ease;
+    white-space:pre-line;
+  }
+
+  .letter.show{display:block;}
+
+  @keyframes unfold{
+    from{opacity:0;transform:translateY(-16px) scale(.98);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
+
+  .letter .signature{
+    display:block;
+    margin-top:1.2rem;
+    font-family:var(--font-display);
+    font-size:1.6rem;
+    color:var(--rose);
+  }
+
+  .custom-msg{
+    margin-top:2rem;
+  }
+
+  .custom-msg textarea{
+    width:100%;
+    min-height:90px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.2);
+    background:rgba(255,255,255,.08);
+    color:var(--cream);
+    padding:.9rem;
+    font-family:var(--font-body);
+    resize:vertical;
+  }
+
+  .custom-msg textarea::placeholder{color:rgba(255,243,236,.5);}
+
+  .btn-row{
+    display:flex;
+    gap:.7rem;
+    margin-top:.8rem;
+    flex-wrap:wrap;
+  }
+
+  button.action{
+    font-family:var(--font-body);
+    font-weight:500;
+    font-size:.85rem;
+    padding:.65rem 1.3rem;
+    border-radius:999px;
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    cursor:pointer;
+    transition:.2s ease;
+  }
+
+  button.action:hover{background:var(--gold);color:#2c0a1f;}
+  button.action:focus-visible{outline:2px solid var(--rose-soft);outline-offset:2px;}
+
+  .saved-note{
+    font-size:.75rem;
+    opacity:.7;
+    margin-top:.5rem;
+    min-height:1em;
+  }
+
+  /* ====================== GALERI FOTO ====================== */
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:1.1rem;
+    margin-top:2rem;
+  }
+
+  .polaroid{
+    background:var(--cream);
+    padding:.5rem .5rem 1.6rem;
+    border-radius:6px;
+    box-shadow:0 12px 22px rgba(0,0,0,.35);
+    transform:rotate(var(--r,-2deg));
+    transition:transform .25s ease;
+  }
+
+  .polaroid:nth-child(even){--r:2deg;}
+  .polaroid:nth-child(3n){--r:-1deg;}
+  .polaroid:hover{transform:rotate(0deg) scale(1.04);}
+
+  .polaroid img{
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+    border-radius:2px;
+    display:block;
+  }
+
+  .polaroid .cap{
+    display:block;
+    text-align:center;
+    color:#3a0f22;
+    font-family:var(--font-display);
+    font-size:1rem;
+    margin-top:.4rem;
+  }
+
+  /* ====================== MUSIK ====================== */
+  .music-fab{
+    position:fixed;
+    bottom:1.4rem;
+    right:1.4rem;
+    z-index:10;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:.5rem;
+  }
+
+  .music-btn{
+    width:58px;height:58px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,var(--gold),var(--rose));
+    border:none;
+    color:#2c0a1f;
+    font-size:1.4rem;
+    cursor:pointer;
+    box-shadow:0 10px 25px rgba(224,53,107,.45);
+    display:flex;align-items:center;justify-content:center;
+    animation:spin 6s linear infinite;
+    animation-play-state:paused;
+  }
+
+  .music-btn.playing{animation-play-state:running;}
+  .music-btn:focus-visible{outline:2px solid var(--cream);outline-offset:3px;}
+
+  /* ====================== FOOTER ====================== */
+  footer{
+    text-align:center;
+    padding:3rem 1.2rem 4rem;
+    font-size:.75rem;
+    opacity:.6;
+  }
+
+  .love-burst-btn{
+    display:block;
+    margin:0 auto 1.2rem;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .music-btn{animation:none;}
+    .scroll-cue{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="heartCanvas"></canvas>
+
+<div class="content">
+
+  <!-- ====================== HERO ====================== -->
+  <section class="hero">
+    <div class="eyebrow">Untuk seseorang yang istimewa</div>
+    <h1>Happy Birthday</h1>
+    <div class="nama" id="namaTampil">Sayang</div>
+    <p class="subtitle" id="subtitleTampil">Semoga hari ini secantik senyummu dan tahun ini semanis kamu. 💕</p>
+    <div class="scroll-cue">gulir ke bawah ↓</div>
+  </section>
+
+  <!-- ====================== KALENDER ====================== -->
+  <section id="kalender">
+    <h2 class="section-title">Hitung Mundur 🎂</h2>
+    <div class="card countdown-wrap">
+      <div class="countdown-numbers" id="countdownNums"></div>
+      <p class="countdown-msg" id="countdownMsg"></p>
+      <div class="calendar">
+        <div class="cal-header" id="calHeader"></div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== FOTO ====================== -->
+  <section id="foto">
+    <h2 class="section-title">Galeri Kenangan 📷</h2>
+    <div class="card">
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </section>
+
+  <!-- ====================== PESAN ====================== -->
+  <section id="pesan">
+    <h2 class="section-title">Sepucuk Surat 💌</h2>
+    <div class="envelope-wrap">
+      <div class="envelope" id="envelope" tabindex="0" role="button" aria-label="Buka surat">
+        <span class="seal">💗</span>
+        <span class="hint">Klik untuk membuka</span>
+      </div>
+    </div>
+
+    <div class="letter" id="letter">
+      <span id="letterBody">Selamat ulang tahun sayang. Semoga di usia yang baru ini, semua doa baikmu dikabulkan, semua langkahmu dimudahkan, dan cita-cita mu yang wawa inginkan tercapai,dan semua yang wawa inginkan tercapai aminn,dan kamu selalu dikelilingi orang-orang yang menyayangimu seperti aku menyayangimu.
+
+happy birthday wawa kesayangan izi
+it's your special dayy, with u all the best sayang
+ wawa izi minta maaf banget yah belum bisa kasih yang special di hari ulang tahun mu inih,jujur sedih ga bisa ngerayain kembali,lagi dan lagi aku tidak bisa merayakan hari special inih,jujur sedih,izi minta maaf banget yah,maaf yah kalau izi belum bisa kasih yang terbaik untuk wawa,butt i tired my best for u, selamat bertambah usia yah wawa, semoga selalu di beri kesahatan selalu,dan di beri panjang umur nya, dan sayangi orang tua mu yah sayang dan aku jugaa yah,anjai sekarang wawa sudah makin dewasa ,kita berdua hebat banget ya sayang, buktinya. masih bisa bertahan sejauh ini sampai usia kamu yang sekarang ini, walaupun banyak sekali yang harus kita hadapi,aku ga espect bisa kenal orang sebaik wawa secantik wawa, dann selucuu se gemoi wawa, makasihh ya sayang suda bertahan sama dunia yang kadang suka jahat ini,dan makasih uda mau jadi rumah buat aku disni,sekali lagi happy birthday riot kuh</span>
+      <span class="signature">— dengan cinta</span>
+
+      <div class="custom-msg">
+        <label for="pesanCustom" style="font-size:.8rem;opacity:.7;display:block;margin-bottom:.4rem;"></label>
+        <textarea id="pesanCustom" placeholder="Tulis pesan tambahan untuknya di sini..."></textarea>
+        <div class="btn-row">
+          <button class="action" id="simpanPesan" style="border-color:#a01d4a;color:#a01d4a;">Simpan Pesan</button>
+          <button class="action" id="resetPesan" style="border-color:#a01d4a;color:#a01d4a;">Hapus</button>
+        </div>
+        <div class="saved-note" id="savedNote" style="color:#a01d4a;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== FOOTER ====================== -->
+  <footer>
+    <button class="action love-burst-btn" id="loveBurst">Kirim Cinta 💌</button>
+    dibuat dengan 💗 untukmu
+  </footer>
+
+</div>
+
+<!-- ====================== MUSIK FLOATING BUTTON ====================== -->
+<div class="music-fab">
+  <button class="music-btn" id="musicBtn" aria-label="Putar musik" title="Putar musik">🎵</button>
+</div>
+<audio id="bgAudio" loop></audio>
+
+<script>
+/* ======================================================================
+   KONFIGURASI — ubah bagian ini sesuai keinginanmu
+   ====================================================================== */
+const CONFIG = {
+  nama: "Sayang",                 // nama orang yang berulang tahun
+  subtitle: "Semoga hari ini secantik senyummu dan tahun ini semanis kamu. 💕",
+  tanggalLahir: "2010-10-06",     // format YYYY-MM-DD (tahun dipakai utk hitung usia)
+
+  // Ganti link-link di bawah ini dengan link fotomu sendiri (format .jpg)
+  // Minimal 4 foto, boleh ditambah lebih banyak lagi.
+  fotos: [
+    "https://cdn.odzre.my.id/dmp.jpg",
+    "https://cdn.odzre.my.id/7g5.jpg",
+    "https://cdn.odzre.my.id/w4y.jpg",
+    "https://cdn.odzre.my.id/3vi.jpg"
+  ],
+
+  // Ganti dengan link musik/lagu kamu sendiri (format .m4a)
+  musikUrl: "https://cdn.imageurlgenerator.com/uploads/043fe65f-4eb3-4a9e-9a97-a376592ccc4e.m4a",
+};
+
+document.getElementById('namaTampil').textContent = CONFIG.nama;
+document.getElementById('subtitleTampil').textContent = CONFIG.subtitle;
+document.title = "Happy Birthday " + CONFIG.nama + " 💕";
+
+/* ======================================================================
+   HUJAN HATI (CANVAS)
+   ====================================================================== */
+const canvas = document.getElementById('heartCanvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const colors = ['#e0356b', '#ff9dc0', '#e8b84b', '#ffffff'];
+
+function makeHeart(){
+  return {
+    x: Math.random() * W,
+    y: -20 - Math.random() * H,
+    size: 8 + Math.random() * 16,
+    speed: 0.6 + Math.random() * 1.6,
+    drift: (Math.random() - 0.5) * 0.6,
+    angle: Math.random() * Math.PI * 2,
+    spin: (Math.random() - 0.5) * 0.02,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    opacity: 0.4 + Math.random() * 0.6
+  };
+}
+
+const heartCount = reduceMotion ? 12 : 45;
+let hearts = Array.from({length: heartCount}, makeHeart);
+
+function drawHeart(h){
+  ctx.save();
+  ctx.translate(h.x, h.y);
+  ctx.rotate(h.angle);
+  ctx.globalAlpha = h.opacity;
+  ctx.fillStyle = h.color;
+  const s = h.size;
+  ctx.beginPath();
+  ctx.moveTo(0, s * 0.3);
+  ctx.bezierCurveTo(-s, -s * 0.6, -s * 1.6, s * 0.5, 0, s * 1.3);
+  ctx.bezierCurveTo(s * 1.6, s * 0.5, s, -s * 0.6, 0, s * 0.3);
+  ctx.fill();
+  ctx.restore();
+}
+
+function animate(){
+  ctx.clearRect(0, 0, W, H);
+  for(const h of hearts){
+    h.y += h.speed;
+    h.x += h.drift;
+    h.angle += h.spin;
+    if(h.y > H + 30){
+      Object.assign(h, makeHeart(), {y: -20});
+    }
+    drawHeart(h);
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ledakan cinta ekstra saat tombol "Kirim Cinta" diklik
+document.getElementById('loveBurst').addEventListener('click', () => {
+  for(let i = 0; i < 30; i++){
+    const h = makeHeart();
+    h.y = H * 0.5 + (Math.random() - 0.5) * 100;
+    h.x = W * 0.5 + (Math.random() - 0.5) * 200;
+    h.speed = 1.5 + Math.random() * 2;
+    hearts.push(h);
+  }
+  if(hearts.length > 250) hearts = hearts.slice(-180);
+});
+
+/* ======================================================================
+   KALENDER & HITUNG MUNDUR ULANG TAHUN
+   ====================================================================== */
+const TARGET_DATE = new Date(2026, 9, 6, 0, 0, 0); // 6 Oktober 2026 (bulan 9 = Oktober, index mulai dari 0)
+
+function nextBirthday(dateStr){
+  const birth = new Date(dateStr + 'T00:00:00');
+  return { next: TARGET_DATE, birth };
+}
+
+function renderCountdown(){
+  const { next, birth } = nextBirthday(CONFIG.tanggalLahir);
+  const now = new Date();
+  const diffMs = next - now;
+
+  const isToday = now.getFullYear() === 2026 &&
+                  now.getMonth() === 9 && now.getDate() === 6;
+
+  const numsEl = document.getElementById('countdownNums');
+  const msgEl = document.getElementById('countdownMsg');
+
+  if(isToday){
+    const age = now.getFullYear() - birth.getFullYear();
+    numsEl.innerHTML = '';
+    msgEl.textContent = `🎉 Hari ini ulang tahunnya! Selamat menempuh usia ${age} tahun! 🎉`;
+  } else {
+    const totalSec = Math.max(0, Math.floor(diffMs / 1000));
+    const days = Math.floor(totalSec / 86400);
+    const hours = Math.floor((totalSec % 86400) / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+
+    numsEl.innerHTML = `
+      <div class="countdown-box"><div class="num">${days}</div><div class="label">Hari</div></div>
+      <div class="countdown-box"><div class="num">${hours}</div><div class="label">Jam</div></div>
+      <div class="countdown-box"><div class="num">${minutes}</div><div class="label">Menit</div></div>
+      <div class="countdown-box"><div class="num">${seconds}</div><div class="label">Detik</div></div>
+    `;
+    const nextAge = next.getFullYear() - birth.getFullYear();
+    msgEl.textContent = `Menuju usia ke-${nextAge} 🎂`;
+  }
+}
+
+const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const dowNames = ["M","S","S","R","K","J","S"];
+
+function renderCalendar(){
+  const { next, birth } = nextBirthday(CONFIG.tanggalLahir);
+  const year = next.getFullYear();
+  const month = birth.getMonth();
+
+  document.getElementById('calHeader').textContent = `${monthNames[month]} ${year}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  dowNames.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for(let i = 0; i < firstDay; i++){
+    const el = document.createElement('div');
+    el.className = 'day empty';
+    grid.appendChild(el);
+  }
+  for(let d = 1; d <= daysInMonth; d++){
+    const el = document.createElement('div');
+    el.className = 'day' + (d === birth.getDate() ? ' birthday' : '');
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+}
+
+renderCountdown();
+renderCalendar();
+setInterval(renderCountdown, 1000);
+
+/* ======================================================================
+   SURAT / PESAN
+   ====================================================================== */
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+
+function toggleLetter(){
+  letter.classList.toggle('show');
+  if(letter.classList.contains('show')){
+    letter.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+envelope.addEventListener('click', toggleLetter);
+envelope.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleLetter(); }
+});
+
+const pesanCustom = document.getElementById('pesanCustom');
+const savedNote = document.getElementById('savedNote');
+const STORAGE_KEY = 'ultah_pesan_custom';
+
+try{
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved) pesanCustom.value = saved;
+}catch(e){ /* localStorage tidak tersedia, lewati */ }
+
+document.getElementById('simpanPesan').addEventListener('click', () => {
+  try{
+    localStorage.setItem(STORAGE_KEY, pesanCustom.value);
+    savedNote.textContent = 'Pesan tersimpan ✓';
+  }catch(e){
+    savedNote.textContent = 'Tidak bisa menyimpan pada perangkat ini';
+  }
+  setTimeout(() => savedNote.textContent = '', 2500);
+});
+
+document.getElementById('resetPesan').addEventListener('click', () => {
+  pesanCustom.value = '';
+  try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  savedNote.textContent = 'Pesan dihapus';
+  setTimeout(() => savedNote.textContent = '', 2000);
+});
+
+/* ======================================================================
+   GALERI FOTO (dimuat otomatis dari link JPG di CONFIG.fotos)
+   ====================================================================== */
+const gallery = document.getElementById('gallery');
+
+function renderGallery(){
+  gallery.innerHTML = '';
+  CONFIG.fotos.forEach(url => {
+    const card = document.createElement('div');
+    card.className = 'polaroid';
+    card.innerHTML = `<img src="${url}" alt="Foto kenangan" loading="lazy"><span class="cap">💕</span>`;
+    gallery.appendChild(card);
+  });
+}
+renderGallery();
+
+/* ======================================================================
+   MUSIK (dimuat otomatis dari link M4A di CONFIG.musikUrl)
+   ====================================================================== */
+const musicBtn = document.getElementById('musicBtn');
+const bgAudio = document.getElementById('bgAudio');
+
+bgAudio.src = CONFIG.musikUrl;
+
+musicBtn.addEventListener('click', () => {
+  if(bgAudio.paused){
+    bgAudio.play();
+    musicBtn.classList.add('playing');
+    musicBtn.textContent = '⏸';
+  } else {
+    bgAudio.pause();
+    musicBtn.classList.remove('playing');
+    musicBtn.textContent = '🎵';
+  }
+});
+</script>
+</body>
+</html>
